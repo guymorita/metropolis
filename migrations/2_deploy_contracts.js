@@ -1,5 +1,5 @@
-var Adoption = artifacts.require("Adoption");
+var Metropolis = artifacts.require("Metropolis");
 
 module.exports = function(deployer) {
-    deployer.deploy(Adoption);
+    deployer.deploy(Metropolis);
 };
