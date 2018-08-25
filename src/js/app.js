@@ -7,6 +7,7 @@ App = {
   contracts: {},
   stores: [],
   items: [],
+  storeIdSelected: null,
 
   init: function() {
     return App.initWeb3()
@@ -48,13 +49,15 @@ App = {
     $(document).on('click', '.btn-new-store-name', App.createStore)
     $(document).on('click', '.btn-view-store', App.getItemsWithE)
     $(document).on('click', '.btn-add-item', App.addItem)
-    // $(document).on('click', '.btn-buy-item', App.viewStore)
+    $(document).on('click', '.btn-buy-item', App.buyItem)
     // $(document).on('click', '.btn-withdraw-funds', App.viewStore)
   },
 
   createStore: (e) => {
     e.preventDefault()
-    App.instance.createStore(name, { from: account })
+    const name = $('.new-store-name').val()
+
+    App.instance.createStore(name, { from: App.account })
       .then(function (data) {
         return App.getStores();
       }).catch(function (error) {
@@ -65,7 +68,6 @@ App = {
 
   getStores: function() {
     App.instance.emitStores({ from: App.account })
-
       .then(function (data) {
         const logs = data.logs
         const storeLogs = []
@@ -83,17 +85,19 @@ App = {
 
   displayStores: () => {
     const stores = App.stores
+    const storesRow = $('#storeRow');
+    storesRow.empty()
+    const storeTemplate = $('#storeTemplate');
+
     for (i = 0; i < stores.length; i ++) {
       const store = stores[i]
 
-      var storesRow = $('#storeRow');
-      var storeTemplate = $('#storeTemplate');
 
       storeTemplate.find('.panel-title').text(store.name);
       storeTemplate.find('img').attr('src', store.picture);
       storeTemplate.find('.store-breed').text(store.storeOwner);
       storeTemplate.find('.store-age').text(store.storeId);
-      storeTemplate.find('.btn-adopt').attr('data-id', store.storeId);
+      storeTemplate.find('.btn-view-store').attr('data-id', store.storeId);
 
       storesRow.append(storeTemplate.html());
     }
@@ -128,6 +132,7 @@ App = {
   },
 
   getItems: (storeId) => {
+    App.storeIdSelected = storeId
     App.instance.emitItemsWithStoreId(storeId, { from: App.account })
       .then(function(data) {
         data.logs[0].args
@@ -147,20 +152,47 @@ App = {
 
   displayItems: () => {
     const items = App.items
+    const itemsRow = $('#itemRow')
+    itemsRow.empty()
+    itemsRow.show()
+    const itemTemplate = $('#itemTemplate')
+
     for (i = 0; i < items.length; i ++) {
       const item = items[i]
 
-      var itemsRow = $('#itemRow');
-      itemsRow.show()
-      var itemTemplate = $('#itemTemplate');
+      const priceInEth = item.priceInWei / WEI_IN_ETH;
 
       itemTemplate.find('.panel-item-title').text(item.name);
+      itemTemplate.find('img').attr('src', item.imgUrl);
+      itemTemplate.find('.item-owner').text(item.owner);
+      itemTemplate.find('.item-id').text(item.itemId);
+      itemTemplate.find('.item-price').text(priceInEth);
+      itemTemplate.find('.btn-buy-item').attr('data-id', item.itemId);
+      itemTemplate.find('.btn-buy-item').attr('data-price', item.priceInWei);
 
       itemsRow.append(itemTemplate.html());
     }
     return false
   },
 
+  buyItem: (e) => {
+    e.preventDefault()
+
+    const data = e.currentTarget.dataset
+    const itemId = data.id
+    const priceInWei = Number(data.price)
+    const storeId = App.storeIdSelected
+
+    App.instance.buyItem(storeId, itemId, { from: App.account, value: priceInWei })
+      .then(function(data) {
+        alert('successfully purchased item!')
+        App.getItems(storeId)
+        return
+      }).catch(function (error) {
+        console.log('error: ', error);
+      });
+    return false
+  }
 };
 
 $(function() {
