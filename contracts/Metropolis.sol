@@ -3,11 +3,11 @@ pragma solidity ^0.4.23;
 
 contract Metropolis {
     address admin;
+    bool private contractStopped = false;
+    uint storeCount = 0;
     mapping(address => bool) storeOwners;
     mapping (uint => Store) stores;
     mapping (uint => uint) itemCountAtStore;
-
-    uint storeCount = 0;
 
     constructor() public {
         admin = msg.sender;
@@ -54,6 +54,11 @@ contract Metropolis {
         _;
     }
 
+    modifier onlyIfContractNotStopped() {
+        require(contractStopped == false);
+        _;
+    }
+
     // Events
 
     event LogStore(uint storeId, address storeOwner, string name);
@@ -79,6 +84,11 @@ contract Metropolis {
         }
     }
 
+    function toggleContractStopped() public onlyAdmin returns (bool) {
+        contractStopped = !contractStopped;
+        return contractStopped;
+    }
+
     function createStore(string nameOfStore, address storeOwner) public onlyAdmin returns (uint storeId) {
         storeId = storeCount++;
 
@@ -88,11 +98,11 @@ contract Metropolis {
         return storeId;
     }
 
-    function addItem(uint storeId, string name, string imgUrl, uint priceInWei) public onlyStoreOwners returns (uint itemId) {
+    function addItem(uint storeId, string name, string imgUrl, uint priceInWei) public onlyStoreOwners onlyIfContractNotStopped returns (uint itemId) {
         // require that the store owner is the correct owner
         Store storage s = stores[storeId];
         address sender = msg.sender;
-        require(s.storeOwner == sender);
+        require(s.storeOwner == sender, "You must be the store owner to add an item to this store");
 
         itemId = itemCountAtStore[storeId]++;
 
@@ -101,11 +111,11 @@ contract Metropolis {
         return itemId;
     }
 
-    function buyItem(uint storeId, uint itemId) public payable returns (bool) {
+    function buyItem(uint storeId, uint itemId) public payable onlyIfContractNotStopped returns (bool) {
         Store storage s = stores[storeId];
         Item storage i = s.items[itemId];
 
-        require(msg.value == i.priceInWei);
+        require(msg.value == i.priceInWei, "Please send the exact price of the item");
 
         s.balanceInWei = s.balanceInWei + msg.value;
 
@@ -114,10 +124,10 @@ contract Metropolis {
         return true;
     }
 
-    function withdrawBalance(uint storeId) public onlyStoreOwners returns (bool) {
+    function withdrawBalance(uint storeId) public onlyStoreOwners onlyIfContractNotStopped returns (bool) {
         Store storage s = stores[storeId];
 
-        require(s.balanceInWei >= 0);
+        require(s.balanceInWei >= 0, "You must have a balance to be able to withdraw");
 
         s.storeOwner.transfer(s.balanceInWei);
         s.balanceInWei = 0;

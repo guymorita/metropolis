@@ -89,4 +89,13 @@ contract('Metropolis', ([admin, owner, visitor]) => {
         assert.equal(differenceInBalance, PRICE_OF_ITEM)
     })
 
+    it('should fail if circuit breaker is on', async () => {
+        await metropolis.toggleContractStopped({ from: admin })
+        await createStore()
+        try {
+            await addItem()
+        } catch (err) {
+            assert.equal('StatusError', err.name)
+        }
+    })
 })
