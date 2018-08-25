@@ -28,7 +28,9 @@
         <br/>
       </div>
       <div class="col-xs-12 col-sm-8 col-sm-push-2 admin-only" style="display: none;">
-        <span>Add new store</span>
+        <h4>Admin</h4>
+        <h6>Add New Store</h6>
+        <span>Name</span>
         <input class="new-store-name" type="text" name="newStoreName"/>
         <span>Address</span>
         <input class="new-store-owner-address" type="text" name="newStoreName"/>
@@ -36,20 +38,26 @@
         <br/>
       </div>
       <div class="col-xs-12 col-sm-8 col-sm-push-2 owner-only" style="display: none;">
-        <span>Withdraw Balance from Store ID</span>
-        <input class="withdraw-balance-store-id" type="number"/>
-        <button class="btn btn-default btn-withdraw-balance" type="button">Withdraw Balance</button>
-      </div>
-      <div class="col-xs-12 col-sm-8 col-sm-push-2 owner-only" style="display: none;">
-        <span>Name</span>
-        <input class="add-item-name" type="text" name="addItemName">
-        <span>Store Id</span>
-        <input class="add-item-store-id" type="text" name="addItemStoreId">
-        <span>Img Url</span>
-        <input class="add-item-img-url" type="text" name="addItemImgUrl">
-        <span>Price (eth)</span>
-        <input class="add-item-price" type="number" name="addItemPrice">
-        <button class="btn btn-default btn-add-item" type="button">Submit</button>
+        <h4>Store Owner</h4>
+        <div>
+          <h6>Withdraw Balance</h6>
+          <span>Store ID</span>
+          <input class="withdraw-balance-store-id" type="number"/>
+          <button class="btn btn-default btn-withdraw-balance" type="button">Withdraw</button>
+        </div>
+        <div>
+          <h6>Add Item</h6>
+          <span>Name</span>
+          <input class="add-item-name" type="text" name="addItemName">
+          <span>Store Id</span>
+          <input class="add-item-store-id" type="text" name="addItemStoreId">
+          <br/>
+          <span>Img Url</span>
+          <input class="add-item-img-url" type="text" name="addItemImgUrl">
+          <span>Price (eth)</span>
+          <input class="add-item-price" type="number" name="addItemPrice">
+          <button class="btn btn-default btn-add-item" type="button">Submit</button>
+        </div>
       </div>
     </div>
 
