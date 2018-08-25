@@ -1,6 +1,5 @@
 pragma solidity ^0.4.23;
 
-
 contract Metropolis {
     address admin;
     mapping(address => bool) storeOwners;
@@ -8,8 +7,6 @@ contract Metropolis {
     mapping (uint => uint) itemCountAtStore;
 
     uint storeCount = 0;
-
-    uint WEI_PER_ETH = 1000000000000000000;
 
     constructor() public {
         admin = msg.sender;
@@ -24,13 +21,14 @@ contract Metropolis {
         bool isForSale;
         string name;
         string imgUrl;
-        uint price;
+        uint priceInWei;
     }
 
     struct Store {
         uint storeId;
         address storeOwner;
         string name;
+        uint balanceInWei;
         mapping (uint => Item) items;
     }
 
@@ -58,7 +56,7 @@ contract Metropolis {
     // Events
 
     event LogStore(uint storeId, address storeOwner, string name);
-    event LogItem(uint itemId, address owner, bool isForSale, string name, string imgUrl, uint price);
+    event LogItem(uint itemId, address owner, bool isForSale, string name, string imgUrl, uint priceInWei);
 
     // External Functions
 
@@ -80,12 +78,12 @@ contract Metropolis {
     function createStore(string nameOfStore) public onlyStoreOwners returns (uint storeId) {
         storeId = storeCount++;
 
-        stores[storeId] = Store(storeId, msg.sender, nameOfStore);
+        stores[storeId] = Store(storeId, msg.sender, nameOfStore, 0);
 
         return storeId;
     }
 
-    function addItem(uint storeId, string name, string imgUrl, uint price) public onlyStoreOwners returns (uint itemId) {
+    function addItem(uint storeId, string name, string imgUrl, uint priceInWei) public onlyStoreOwners returns (uint itemId) {
         // require that the store owner is the correct owner
         Store storage s = stores[storeId];
         address sender = msg.sender;
@@ -93,7 +91,7 @@ contract Metropolis {
 
         itemId = itemCountAtStore[storeId]++;
 
-        s.items[itemId] = Item(itemId, sender, true, name, imgUrl, price);
+        s.items[itemId] = Item(itemId, sender, true, name, imgUrl, priceInWei);
 
         return itemId;
     }
@@ -102,7 +100,9 @@ contract Metropolis {
         Store storage s = stores[storeId];
         Item storage i = s.items[itemId];
 
-        require(msg.value / WEI_PER_ETH >= i.price);
+        require(msg.value >= i.priceInWei);
+
+        s.balanceInWei = s.balanceInWei + msg.value;
 
         i.owner = msg.sender;
 
@@ -133,7 +133,7 @@ contract Metropolis {
                 it.isForSale,
                 it.name,
                 it.imgUrl,
-                it.price
+                it.priceInWei
             );
         }
     }

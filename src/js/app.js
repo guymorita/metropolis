@@ -1,4 +1,4 @@
-
+WEI_IN_ETH = 1000000000000000000
 
 App = {
   web3Provider: null,
@@ -105,9 +105,11 @@ App = {
     const name = $('.add-item-name').val()
     const storeId = $('.add-item-store-id').val()
     const imgUrl = $('.add-item-img-url').val()
-    const price = $('.add-item-price').val()
+    const priceInEth = $('.add-item-price').val()
 
-    App.instance.addItem(Number(storeId), name, imgUrl, Number(price), { from: App.account })
+    const priceInWei = Number(priceInEth) * WEI_IN_ETH;
+
+    App.instance.addItem(Number(storeId), name, imgUrl, priceInWei, { from: App.account })
       .then(function(data) {
         alert('successfully added item ' + name)
         App.getItems(storeId)
