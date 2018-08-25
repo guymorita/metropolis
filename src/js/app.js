@@ -202,8 +202,8 @@ App = {
 
       storeTemplate.find('.panel-title').text(store.name);
       storeTemplate.find('img').attr('src', store.picture);
-      storeTemplate.find('.store-breed').text(store.storeOwner);
-      storeTemplate.find('.store-age').text(store.storeId);
+      storeTemplate.find('.store-address').text(store.storeOwner);
+      storeTemplate.find('.store-id').text(store.storeId);
       storeTemplate.find('.btn-view-store').attr('data-id', store.storeId);
 
       storesRow.append(storeTemplate.html());
