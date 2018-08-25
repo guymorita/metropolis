@@ -40,6 +40,32 @@ The following **optional** features are implemented:
 - [ ] Project uses LLL / Vyper
 - [ ] Testnet deployment
 
+## Installation Instructions
+
+#### Clone repo
+``` bash
+git clone https://github.com/guymorita/metropolis
+```
+
+#### Download and run truffle, ganache, and metamask
+- [https://github.com/trufflesuite/truffle](https://github.com/trufflesuite/truffle)
+- [https://truffleframework.com/ganache](https://truffleframework.com/ganache)
+- [https://metamask.io/](https://metamask.io/)
+
+#### Compile and migrate repo
+``` bash
+truffle compile
+truffle migrate
+```
+
+#### Startup lite-server
+``` bash
+npm run dev
+```
+
+#### Open browser
+http://localhost:3000
+
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
