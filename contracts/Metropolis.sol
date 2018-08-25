@@ -76,10 +76,11 @@ contract Metropolis {
         return true;
     }
 
-    function createStore(string nameOfStore) public onlyStoreOwners returns (uint storeId) {
+    function createStore(string nameOfStore, address storeOwner) public onlyAdmin returns (uint storeId) {
         storeId = storeCount++;
 
-        stores[storeId] = Store(storeId, msg.sender, nameOfStore, 0);
+        stores[storeId] = Store(storeId, storeOwner, nameOfStore, 0);
+        storeOwners[storeOwner] = true;
 
         return storeId;
     }

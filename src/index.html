@@ -27,16 +27,20 @@
         <hr/>
         <br/>
       </div>
-      <div class="col-xs-12 col-sm-8 col-sm-push-2">
+      <div class="col-xs-12 col-sm-8 col-sm-push-2 admin-only" style="display: none;">
         <span>Add new store</span>
         <input class="new-store-name" type="text" name="newStoreName"/>
+        <span>Address</span>
+        <input class="new-store-owner-address" type="text" name="newStoreName"/>
         <button class="btn btn-default btn-new-store-name" type="button">Submit</button>
         <br/>
+      </div>
+      <div class="col-xs-12 col-sm-8 col-sm-push-2 owner-only" style="display: none;">
         <span>Withdraw Balance from Store ID</span>
         <input class="withdraw-balance-store-id" type="number"/>
         <button class="btn btn-default btn-withdraw-balance" type="button">Withdraw Balance</button>
       </div>
-      <div class="col-xs-12 col-sm-8 col-sm-push-2">
+      <div class="col-xs-12 col-sm-8 col-sm-push-2 owner-only" style="display: none;">
         <span>Name</span>
         <input class="add-item-name" type="text" name="addItemName">
         <span>Store Id</span>

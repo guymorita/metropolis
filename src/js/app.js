@@ -8,6 +8,7 @@ App = {
   stores: [],
   items: [],
   storeIdSelected: null,
+  role: null,
 
   init: function() {
     return App.initWeb3()
@@ -37,8 +38,13 @@ App = {
 
         App.contracts.Metropolis.deployed().then(function(instance) {
           App.instance = instance;
+          return App.instance.getRole({ from: App.account })
+        }).then((function(data) {
+          App.role = data
+
+          App.displayAdminAndOwners()
           return App.getStores()
-        })
+        }))
       })
     });
 
@@ -53,20 +59,9 @@ App = {
     $(document).on('click', '.btn-withdraw-balance', App.withdrawBalance)
   },
 
-  createStore: (e) => {
-    e.preventDefault()
-    const name = $('.new-store-name').val()
+  // Getters
 
-    App.instance.createStore(name, { from: App.account })
-      .then(function (data) {
-        return App.getStores();
-      }).catch(function (error) {
-        console.log('error: ', error);
-      })
-    return false
-  },
-
-  getStores: function() {
+  getStores: () => {
     App.instance.emitStores({ from: App.account })
       .then(function (data) {
         const logs = data.logs
@@ -80,47 +75,6 @@ App = {
       }).catch(function (error) {
         console.log('error: ', error);
       })
-    return false
-  },
-
-  displayStores: () => {
-    const stores = App.stores
-    const storesRow = $('#storeRow');
-    storesRow.empty()
-    const storeTemplate = $('#storeTemplate');
-
-    for (i = 0; i < stores.length; i ++) {
-      const store = stores[i]
-
-
-      storeTemplate.find('.panel-title').text(store.name);
-      storeTemplate.find('img').attr('src', store.picture);
-      storeTemplate.find('.store-breed').text(store.storeOwner);
-      storeTemplate.find('.store-age').text(store.storeId);
-      storeTemplate.find('.btn-view-store').attr('data-id', store.storeId);
-
-      storesRow.append(storeTemplate.html());
-    }
-    return false
-  },
-
-  addItem: (e) => {
-    e.preventDefault()
-    const name = $('.add-item-name').val()
-    const storeId = $('.add-item-store-id').val()
-    const imgUrl = $('.add-item-img-url').val()
-    const priceInEth = $('.add-item-price').val()
-
-    const priceInWei = Number(priceInEth) * WEI_IN_ETH;
-
-    App.instance.addItem(Number(storeId), name, imgUrl, priceInWei, { from: App.account })
-      .then(function(data) {
-        alert('successfully added item ' + name)
-        App.getItems(storeId)
-        return
-      }).catch(function (error) {
-        console.log('error: ', error);
-      });
     return false
   },
 
@@ -150,28 +104,39 @@ App = {
     return false
   },
 
-  displayItems: () => {
-    const items = App.items
-    const itemsRow = $('#itemRow')
-    itemsRow.empty()
-    itemsRow.show()
-    const itemTemplate = $('#itemTemplate')
+  // Actions
 
-    for (i = 0; i < items.length; i ++) {
-      const item = items[i]
+  createStore: (e) => {
+    e.preventDefault()
+    const name = $('.new-store-name').val()
+    const address = $('.new-store-owner-address').val()
 
-      const priceInEth = item.priceInWei / WEI_IN_ETH;
+    App.instance.createStore(name, address, { from: App.account })
+      .then(function (data) {
+        return App.getStores();
+      }).catch(function (error) {
+        console.log('error: ', error);
+      })
+    return false
+  },
 
-      itemTemplate.find('.panel-item-title').text(item.name);
-      itemTemplate.find('img').attr('src', item.imgUrl);
-      itemTemplate.find('.item-owner').text(item.owner);
-      itemTemplate.find('.item-id').text(item.itemId);
-      itemTemplate.find('.item-price').text(priceInEth);
-      itemTemplate.find('.btn-buy-item').attr('data-id', item.itemId);
-      itemTemplate.find('.btn-buy-item').attr('data-price', item.priceInWei);
+  addItem: (e) => {
+    e.preventDefault()
+    const name = $('.add-item-name').val()
+    const storeId = $('.add-item-store-id').val()
+    const imgUrl = $('.add-item-img-url').val()
+    const priceInEth = $('.add-item-price').val()
 
-      itemsRow.append(itemTemplate.html());
-    }
+    const priceInWei = Number(priceInEth) * WEI_IN_ETH;
+
+    App.instance.addItem(Number(storeId), name, imgUrl, priceInWei, { from: App.account })
+      .then(function(data) {
+        alert('successfully added item ' + name)
+        App.getItems(storeId)
+        return
+      }).catch(function (error) {
+        console.log('error: ', error);
+      });
     return false
   },
 
@@ -206,6 +171,68 @@ App = {
       }).catch(function (error) {
         console.log('error: ', error);
       });
+    return false
+  },
+
+  // Display
+
+  displayAdminAndOwners: () => {
+    const role = App.role
+    if (role === 'admin' || role === 'storeOwner') {
+      $('.owner-only').show()
+    } else {
+      $('.owner-only').hide()
+    }
+
+    if (role === 'admin') {
+      $('.admin-only').show()
+    } else {
+      $('.admin-only').hide()
+    }
+  },
+
+  displayStores: () => {
+    const stores = App.stores
+    const storesRow = $('#storeRow');
+    storesRow.empty()
+    const storeTemplate = $('#storeTemplate');
+
+    for (i = 0; i < stores.length; i ++) {
+      const store = stores[i]
+
+      storeTemplate.find('.panel-title').text(store.name);
+      storeTemplate.find('img').attr('src', store.picture);
+      storeTemplate.find('.store-breed').text(store.storeOwner);
+      storeTemplate.find('.store-age').text(store.storeId);
+      storeTemplate.find('.btn-view-store').attr('data-id', store.storeId);
+
+      storesRow.append(storeTemplate.html());
+    }
+    return false
+  },
+
+  displayItems: () => {
+    const items = App.items
+    const itemsRow = $('#itemRow')
+    itemsRow.empty()
+    itemsRow.show()
+    const itemTemplate = $('#itemTemplate')
+
+    for (i = 0; i < items.length; i ++) {
+      const item = items[i]
+
+      const priceInEth = item.priceInWei / WEI_IN_ETH;
+
+      itemTemplate.find('.panel-item-title').text(item.name);
+      itemTemplate.find('img').attr('src', item.imgUrl);
+      itemTemplate.find('.item-owner').text(item.owner);
+      itemTemplate.find('.item-id').text(item.itemId);
+      itemTemplate.find('.item-price').text(priceInEth);
+      itemTemplate.find('.btn-buy-item').attr('data-id', item.itemId);
+      itemTemplate.find('.btn-buy-item').attr('data-price', item.priceInWei);
+
+      itemsRow.append(itemTemplate.html());
+    }
     return false
   }
 };
