@@ -33,14 +33,22 @@ contract Metropolis {
 
     // Modifiers
 
+    function isAdmin() private view returns (bool) {
+        return msg.sender == admin;
+    }
+
     modifier onlyAdmin() {
-        require(msg.sender == admin);
+        require(isAdmin());
         // TODO: Why the _;
         _;
     }
 
+    function isStoreOwner() private view returns (bool) {
+        return storeOwners[msg.sender];
+    }
+
     modifier onlyStoreOwners() {
-        require(storeOwners[msg.sender]);
+        require(isStoreOwner());
         _;
     }
 
@@ -51,11 +59,21 @@ contract Metropolis {
 
     // Functions
 
-    function addStoreOwner(address newStoreOwner) onlyAdmin {
+    function getRole() public returns (string) {
+        if (isAdmin()) {
+            return "admin";
+        } else if (isStoreOwner()) {
+            return "storeOwner";
+        } else {
+            return "visitor";
+        }
+    }
+
+    function addStoreOwner(address newStoreOwner) public onlyAdmin {
         storeOwners[newStoreOwner] = true;
     }
 
-    function createStore(string nameOfStore) onlyStoreOwners returns (uint storeId) {
+    function createStore(string nameOfStore) public onlyStoreOwners returns (uint storeId) {
         storeId = storeCount++;
 
         stores[storeId] = Store(storeId, msg.sender, nameOfStore);
@@ -63,7 +81,7 @@ contract Metropolis {
         return storeId;
     }
 
-    function addItem(uint storeId, string name, string imgUrl, uint price) onlyStoreOwners returns (uint itemId) {
+    function addItem(uint storeId, string name, string imgUrl, uint price) public onlyStoreOwners returns (uint itemId) {
         // require that the store owner is the correct owner
         Store storage s = stores[storeId];
         address sender = msg.sender;
@@ -74,7 +92,6 @@ contract Metropolis {
         s.items[itemId] = Item(itemId, sender, true, name, imgUrl, price);
 
         return itemId;
-
     }
 
     // Emit
