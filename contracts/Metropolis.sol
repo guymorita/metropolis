@@ -1,5 +1,6 @@
 pragma solidity ^0.4.23;
 
+
 contract Metropolis {
     address admin;
     mapping(address => bool) storeOwners;
@@ -7,6 +8,8 @@ contract Metropolis {
     mapping (uint => uint) itemCountAtStore;
 
     uint storeCount = 0;
+
+    uint WEI_PER_ETH = 1000000000000000000;
 
     constructor() public {
         admin = msg.sender;
@@ -57,9 +60,9 @@ contract Metropolis {
     event LogStore(uint storeId, address storeOwner, string name);
     event LogItem(uint itemId, address owner, bool isForSale, string name, string imgUrl, uint price);
 
-    // Functions
+    // External Functions
 
-    function getRole() public returns (string) {
+    function getRole() public view returns (string) {
         if (isAdmin()) {
             return "admin";
         } else if (isStoreOwner()) {
@@ -69,8 +72,9 @@ contract Metropolis {
         }
     }
 
-    function addStoreOwner(address newStoreOwner) public onlyAdmin {
+    function addStoreOwner(address newStoreOwner) public onlyAdmin returns (bool) {
         storeOwners[newStoreOwner] = true;
+        return true;
     }
 
     function createStore(string nameOfStore) public onlyStoreOwners returns (uint storeId) {
@@ -92,6 +96,17 @@ contract Metropolis {
         s.items[itemId] = Item(itemId, sender, true, name, imgUrl, price);
 
         return itemId;
+    }
+
+    function buyItem(uint storeId, uint itemId) public payable returns (bool) {
+        Store storage s = stores[storeId];
+        Item storage i = s.items[itemId];
+
+        require(msg.value / WEI_PER_ETH >= i.price);
+
+        i.owner = msg.sender;
+
+        return true;
     }
 
     // Emit

@@ -6,7 +6,6 @@ App = {
   instance: null,
   contracts: {},
   stores: [],
-  storeIdSelected: null,
   items: [],
 
   init: function() {
@@ -33,7 +32,6 @@ App = {
       App.contracts.Metropolis.setProvider(App.web3Provider);
 
       web3.eth.getAccounts(function(err, accounts) {
-        debugger
         App.account = accounts[0];
 
         App.contracts.Metropolis.deployed().then(function(instance) {
