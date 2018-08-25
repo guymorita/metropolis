@@ -1,68 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Metropolis</title>
 
-    <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>Metropolis</title>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-  </head>
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12 col-sm-8 col-sm-push-2">
-          <h1 class="text-center">Metropolis</h1>
-          <hr/>
-          <br/>
-        </div>
-        <div class="col-xs-12 col-sm-8 col-sm-push-2">
-            <h1 class="text-center">Stores</h1>
-            <span>Add new store</span>
-            <input class="new-store-name" type="text" name="newStoreName">
-            <button class="btn btn-default btn-new-store-name" type="button">Submit</button>
-            <hr/>
-            <br/>
-          </div>
-      </div>
+</head>
 
-      <div id="storeRow" class="row">
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-sm-push-2">
+        <h1 class="text-center">Metropolis</h1>
+        <hr/>
+        <br/>
+      </div>
+      <div class="col-xs-12 col-sm-8 col-sm-push-2">
+        <span>Add new store</span>
+        <input class="new-store-name" type="text" name="newStoreName">
+        <button class="btn btn-default btn-new-store-name" type="button">Submit</button>
+      </div>
+      <div class="col-xs-12 col-sm-8 col-sm-push-2">
+        <span>Name</span>
+        <input class="add-item-name" type="text" name="addItemName">
+        <span>Store Id</span>
+        <input class="add-item-store-id" type="text" name="addItemStoreId">
+        <span>Img Url</span>
+        <input class="add-item-img-url" type="text" name="addItemImgUrl">
+        <span>Price (eth)</span>
+        <input class="add-item-price" type="number" name="addItemPrice">
+        <button class="btn btn-default btn-add-item" type="button">Submit</button>
       </div>
     </div>
 
-    <div id="storeTemplate" style="display: none;">
+    <div id="storeRow" class="row">
+    </div>
+
+    <div id="itemRow" class="row" style="display: none;">
+      <h1 class="text-center">Items</h1>
+
+      </div>
+  </div>
+
+  <div id="storeTemplate" style="display: none;">
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="panel panel-default panel-store">
+        <div class="panel-heading">
+          <h3 class="panel-title">Scrappy</h3>
+        </div>
+        <div class="panel-body">
+          <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="https://vignette.wikia.nocookie.net/zelda/images/c/c2/Fierce_Deity_Sword.png/revision/latest?cb=20101109205943"
+            data-holder-rendered="true">
+          <br/>
+          <br/>
+          <strong>Address</strong>:
+          <span class="store-breed">Golden Retriever</span>
+          <br/>
+          <strong>Store ID</strong>:
+          <span class="store-age">3</span>
+          <br/>
+          <button class="btn btn-default btn-view-store" type="button" data-id="0">View Store</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div id="itemTemplate" style="display: none;">
       <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-default panel-store">
+        <div class="panel panel-default panel-item">
           <div class="panel-heading">
-            <h3 class="panel-title">Scrappy</h3>
+            <h3 class="panel-item-title">Scrappy</h3>
           </div>
           <div class="panel-body">
-            <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="https://animalso.com/wp-content/uploads/2017/01/Golden-Retriever_6.jpg" data-holder-rendered="true">
-            <br/><br/>
-            <strong>Address</strong>: <span class="store-breed">Golden Retriever</span><br/>
-            <strong>Store ID</strong>: <span class="store-age">3</span><br/>
-            <button class="btn btn-default btn-adopt" type="button" data-id="0">Adopt</button>
+            <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="https://vignette.wikia.nocookie.net/zelda/images/c/c2/Fierce_Deity_Sword.png/revision/latest?cb=20101109205943"
+              data-holder-rendered="true">
+            <br/>
+            <br/>
+            <strong>Address</strong>:
+            <span class="item-breed">Golden Retriever</span>
+            <br/>
+            <strong>Store ID</strong>:
+            <span class="item-age">3</span>
+            <br/>
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/web3.min.js"></script>
-    <script src="js/truffle-contract.js"></script>
-    <script src="js/app.js"></script>
-  </body>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/web3.min.js"></script>
+  <script src="js/truffle-contract.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
 </html>

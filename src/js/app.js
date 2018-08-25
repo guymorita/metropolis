@@ -2,28 +2,15 @@
 
 App = {
   web3Provider: null,
+  account: null,
+  instance: null,
   contracts: {},
   stores: [],
+  storeIdSelected: null,
+  items: [],
 
   init: function() {
-    // Load pets.
-    $.getJSON('../pets.json', function(data) {
-      var petsRow = $('#petsRow');
-      var petTemplate = $('#petTemplate');
-
-      for (i = 0; i < data.length; i ++) {
-        petTemplate.find('.panel-title').text(data[i].name);
-        petTemplate.find('img').attr('src', data[i].picture);
-        petTemplate.find('.pet-breed').text(data[i].breed);
-        petTemplate.find('.pet-age').text(data[i].age);
-        petTemplate.find('.pet-location').text(data[i].location);
-        petTemplate.find('.btn-adopt').attr('data-id', data[i].id);
-
-        petsRow.append(petTemplate.html());
-      }
-    });
-
-    return App.initWeb3();
+    return App.initWeb3()
   },
 
   initWeb3: function() {
@@ -46,56 +33,42 @@ App = {
       App.contracts.Metropolis.setProvider(App.web3Provider);
 
       web3.eth.getAccounts(function(err, accounts) {
-        var account = accounts[0];
+        debugger
+        App.account = accounts[0];
 
         App.contracts.Metropolis.deployed().then(function(instance) {
-          adoptionInstance = instance;
-          console.log('instance', instance);
+          App.instance = instance;
+          return App.getStores()
         })
       })
-      App.getStores()
-      return App.markAdopted;
     });
 
     return App.bindEvents();
   },
 
   bindEvents: function() {
-    $(document).on('click', '.btn-adopt', App.handleAdopt);
     $(document).on('click', '.btn-new-store-name', App.createStore)
+    $(document).on('click', '.btn-view-store', App.getItemsWithE)
+    $(document).on('click', '.btn-add-item', App.addItem)
+    // $(document).on('click', '.btn-buy-item', App.viewStore)
+    // $(document).on('click', '.btn-withdraw-funds', App.viewStore)
   },
 
-  createStore: () => {
-    web3.eth.getAccounts(function (error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-      var account = accounts[0];
-
-      var name = $('.new-store-name').val()
-
-      App.contracts.Metropolis.deployed().then(function (instance) {
-        metro = instance;
-        return metro.createStore(name, { from: account });
-      }).then(function (data) {
+  createStore: (e) => {
+    e.preventDefault()
+    App.instance.createStore(name, { from: account })
+      .then(function (data) {
         return App.getStores();
       }).catch(function (error) {
         console.log('error: ', error);
-      });
-    });
+      })
+    return false
   },
 
   getStores: function() {
-    web3.eth.getAccounts(function (error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-      var account = accounts[0];
+    App.instance.emitStores({ from: App.account })
 
-      App.contracts.Metropolis.deployed().then(function (instance) {
-        metro = instance;
-        return metro.emitStores({ from: account });
-      }).then(function (data) {
+      .then(function (data) {
         const logs = data.logs
         const storeLogs = []
         for (i = 0; i < logs.length; i ++) {
@@ -106,9 +79,8 @@ App = {
         return App.displayStores()
       }).catch(function (error) {
         console.log('error: ', error);
-      });
-    });
-
+      })
+    return false
   },
 
   displayStores: () => {
@@ -123,57 +95,71 @@ App = {
       storeTemplate.find('img').attr('src', store.picture);
       storeTemplate.find('.store-breed').text(store.storeOwner);
       storeTemplate.find('.store-age').text(store.storeId);
-      storeTemplate.find('.btn-adopt').attr('data-id', store.id);
+      storeTemplate.find('.btn-adopt').attr('data-id', store.storeId);
 
       storesRow.append(storeTemplate.html());
     }
+    return false
   },
 
-  markAdopted: function(adopters, account) {
-    var adoptionInstance;
+  addItem: (e) => {
+    e.preventDefault()
+    const name = $('.add-item-name').val()
+    const storeId = $('.add-item-store-id').val()
+    const imgUrl = $('.add-item-img-url').val()
+    const price = $('.add-item-price').val()
 
-    App.contracts.Metropolis.deployed().then(function(instance) {
-      adoptionInstance = instance;
-      debugger;
-
-      return adoptionInstance.getAdopters.call();
-    }).then(function(adopters) {
-      for (i = 0; i < adopters.length; i++) {
-        if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
-          $('.panel-pet').eq(i).find('button').text('Success').attr('disabled', true);
-        }
-      }
-    }).catch(function(err) {
-      console.log(err.message);
-    });
-  },
-
-  handleAdopt: function(event) {
-    event.preventDefault();
-
-    var petId = parseInt($(event.target).data('id'));
-
-    var adoptionInstance;
-
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-
-      var account = accounts[0];
-
-      App.contracts.Metropolis.deployed().then(function(instance) {
-        adoptionInstance = instance;
-
-        // Execute adopt as a transaction by sending account
-        return adoptionInstance.adopt(petId, {from: account});
-      }).then(function(result) {
-        return App.markAdopted();
-      }).catch(function(err) {
-        console.log(err.message);
+    App.instance.addItem(Number(storeId), name, imgUrl, Number(price), { from: App.account })
+      .then(function(data) {
+        alert('successfully added item ' + name)
+        App.getItems(storeId)
+        return
+      }).catch(function (error) {
+        console.log('error: ', error);
       });
-    });
-  }
+    return false
+  },
+
+  getItemsWithE: (e) => {
+    e.preventDefault();
+    const storeId = Number(e.currentTarget.dataset.id)
+    App.getItems(storeId)
+    return false
+  },
+
+  getItems: (storeId) => {
+    App.instance.emitItemsWithStoreId(storeId, { from: App.account })
+      .then(function(data) {
+        data.logs[0].args
+        const logs = data.logs
+        const itemLogs = []
+        for (i = 0; i < logs.length; i++ ){
+          itemLogs.push(logs[i].args)
+        }
+        return App.items = itemLogs
+      }).then(function() {
+        return App.displayItems()
+      }).catch(function (error) {
+        console.log('error: ', error);
+      });
+    return false
+  },
+
+  displayItems: () => {
+    const items = App.items
+    for (i = 0; i < items.length; i ++) {
+      const item = items[i]
+
+      var itemsRow = $('#itemRow');
+      itemsRow.show()
+      var itemTemplate = $('#itemTemplate');
+
+      itemTemplate.find('.panel-item-title').text(item.name);
+
+      itemsRow.append(itemTemplate.html());
+    }
+    return false
+  },
 
 };
 
