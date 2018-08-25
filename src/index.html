@@ -22,52 +22,86 @@
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-xs-12 col-sm-8 col-sm-push-2">
+      <div class="col-xs-12 col-sm-10">
         <h1 class="text-center">Metropolis</h1>
         <hr/>
         <br/>
       </div>
-      <div class="col-xs-12 col-sm-8 col-sm-push-2 admin-only" style="display: none;">
-        <h4>Admin</h4>
-        <h6>Add New Store</h6>
-        <span>Name</span>
-        <input class="new-store-name" type="text" name="newStoreName"/>
-        <span>Address</span>
-        <input class="new-store-owner-address" type="text" name="newStoreName"/>
-        <button class="btn btn-default btn-new-store-name" type="button">Submit</button>
+      <div class="col-xs-12 col-sm-10 admin-only" style="display: none;">
+        <h3>Admin Panel</h3>
+        <br/>
+        <h4>Add New Store</h4>
+        <form>
+          <div class="form-group">
+            <label>Name of Store</label>
+            <input type="text" class="form-control new-store-name" placeholder="Enter name of store">
+            <br/>
+            <label>Address of Owner</label>
+            <input type="text" class="form-control new-store-owner-address" placeholder="Enter ethereum address">
+            <small id="emailHelp" class="form-text text-muted">Please double check this address.</small>
+          </div>
+          <button type="submit" class="btn btn-primary btn-new-store-name">Submit</button>
+        </form>
         <br/>
       </div>
-      <div class="col-xs-12 col-sm-8 col-sm-push-2 owner-only" style="display: none;">
-        <h4>Store Owner</h4>
+      <div class="col-xs-12 col-sm-10 owner-only" style="display: none;">
+        <h3>Store Owner Panel</h3>
+        <br/>
+
         <div>
-          <h6>Withdraw Balance</h6>
-          <span>Store ID</span>
-          <input class="withdraw-balance-store-id" type="number"/>
-          <button class="btn btn-default btn-withdraw-balance" type="button">Withdraw</button>
+          <h4>Withdraw Balance</h4>
+          <form class="form-inline">
+            <div class="form-group">
+              <label>Store ID</label>
+              <input type="text" class="form-control withdraw-balance-store-id" placeholder="Enter Store ID">
+            </div>
+            <button type="submit" class="btn btn-primary btn-withdraw-balance">Withdraw</button>
+          </form>
         </div>
         <div>
-          <h6>Add Item</h6>
-          <span>Name</span>
-          <input class="add-item-name" type="text" name="addItemName">
-          <span>Store Id</span>
-          <input class="add-item-store-id" type="text" name="addItemStoreId">
-          <br/>
-          <span>Img Url</span>
-          <input class="add-item-img-url" type="text" name="addItemImgUrl">
-          <span>Price (eth)</span>
-          <input class="add-item-price" type="number" name="addItemPrice">
-          <button class="btn btn-default btn-add-item" type="button">Submit</button>
+          <h4>Add Item</h4>
+          <form>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label>Name of Item</label>
+                <input type="text" class="form-control add-item-name" placeholder="Enter name of item">
+              </div>
+              <div class="form-group col-md-6">
+                <label>Store ID</label>
+                <input type="text" class="form-control add-item-store-id" placeholder="Enter Store ID">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label>Image URL</label>
+                <input type="text" class="form-control add-item-img-url" placeholder="Enter URL of Image for Item">
+              </div>
+              <div class="form-group col-md-6">
+                <label>Price (eth)</label>
+                <input type="text" class="form-control add-item-price" placeholder="Enter price in eth">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-add-item">Submit</button>
+          </form>
         </div>
       </div>
     </div>
 
+    <br/>
+    <div class="col-xs-12 col-sm-10">
+      <h2 class="text-center">Stores</h2>
+    </div>
     <div id="storeRow" class="row">
     </div>
 
-    <div id="itemRow" class="row" style="display: none;">
-      <h1 class="text-center">Items</h1>
+    <br/>
 
-      </div>
+    <div class="col-xs-12 col-sm-10">
+      <h2 class="text-center items-title" style="display: none;">Items</h2>
+    </div>
+
+    <div id="itemRow" class="row" style="display: none;">
+    </div>
   </div>
 
   <div id="storeTemplate" style="display: none;">
@@ -82,7 +116,7 @@
           <br/>
           <br/>
           <strong>Address</strong>:
-          <span class="store-address">Golden Retriever</span>
+          <span class="store-address" style="overflow-wrap:break-word;">Golden Retriever</span>
           <br/>
           <strong>ID</strong>:
           <span class="store-id">3</span>
@@ -91,36 +125,35 @@
         </div>
       </div>
     </div>
-
   </div>
 
 
   <div id="itemTemplate" style="display: none;">
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-default panel-item">
-          <div class="panel-heading">
-            <h3 class="panel-item-title">Scrappy</h3>
-          </div>
-          <div class="panel-body">
-            <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="https://vignette.wikia.nocookie.net/zelda/images/c/c2/Fierce_Deity_Sword.png/revision/latest?cb=20101109205943"
-              data-holder-rendered="true">
-            <br/>
-            <br/>
-            <strong>Owner</strong>:
-            <span class="item-owner">0x2132j13j</span>
-            <br/>
-            <strong>ID</strong>:
-            <span class="item-id">3</span>
-            <br/>
-            <strong>Price (eth)</strong>:
-            <span class="item-price">3</span>
-            <br/>
-            <button class="btn btn-default btn-buy-item" type="button" data-id="0" data-price="0">Buy Item</button>
-          </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="panel panel-default panel-item">
+        <div class="panel-heading">
+          <h3 class="panel-item-title">Scrappy</h3>
+        </div>
+        <div class="panel-body">
+          <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="https://vignette.wikia.nocookie.net/zelda/images/c/c2/Fierce_Deity_Sword.png/revision/latest?cb=20101109205943"
+            data-holder-rendered="true">
+          <br/>
+          <br/>
+          <strong>Owner</strong>:
+          <span class="item-owner" style="overflow-wrap:break-word;">0x2132j13j</span>
+          <br/>
+          <strong>ID</strong>:
+          <span class="item-id">3</span>
+          <br/>
+          <strong>Price (eth)</strong>:
+          <span class="item-price">3</span>
+          <br/>
+          <button class="btn btn-default btn-buy-item" type="button" data-id="0" data-price="0">Buy Item</button>
         </div>
       </div>
-
     </div>
+
+  </div>
 
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
