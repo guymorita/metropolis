@@ -61,6 +61,10 @@ contract Metropolis {
 
     // External Functions
 
+    function getItemCountAtStore(uint storeId) public view returns (uint) {
+        return itemCountAtStore[storeId];
+    }
+
     function getRole() public view returns (string) {
         if (isAdmin()) {
             return "admin";
@@ -69,11 +73,6 @@ contract Metropolis {
         } else {
             return "visitor";
         }
-    }
-
-    function addStoreOwner(address newStoreOwner) public onlyAdmin returns (bool) {
-        storeOwners[newStoreOwner] = true;
-        return true;
     }
 
     function createStore(string nameOfStore, address storeOwner) public onlyAdmin returns (uint storeId) {
