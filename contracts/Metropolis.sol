@@ -65,6 +65,10 @@ contract Metropolis {
         return itemCountAtStore[storeId];
     }
 
+    function getBalanceOfStore(uint storeId) public view onlyStoreOwners returns (uint) {
+        return stores[storeId].balanceInWei;
+    }
+
     function getRole() public view returns (string) {
         if (isAdmin()) {
             return "admin";
