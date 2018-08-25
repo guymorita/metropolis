@@ -50,7 +50,7 @@ App = {
     $(document).on('click', '.btn-view-store', App.getItemsWithE)
     $(document).on('click', '.btn-add-item', App.addItem)
     $(document).on('click', '.btn-buy-item', App.buyItem)
-    // $(document).on('click', '.btn-withdraw-funds', App.viewStore)
+    $(document).on('click', '.btn-withdraw-balance', App.withdrawBalance)
   },
 
   createStore: (e) => {
@@ -187,6 +187,21 @@ App = {
       .then(function(data) {
         alert('successfully purchased item!')
         App.getItems(storeId)
+        return
+      }).catch(function (error) {
+        console.log('error: ', error);
+      });
+    return false
+  },
+
+  withdrawBalance: (e) => {
+    e.preventDefault()
+
+    const storeId = Number($('.withdraw-balance-store-id').val())
+
+    App.instance.withdrawBalance(storeId, { from: App.account, gas: 4000000 })
+      .then(function(data) {
+        alert('successfully withdrew balance!')
         return
       }).catch(function (error) {
         console.log('error: ', error);
