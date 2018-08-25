@@ -125,13 +125,18 @@ contract Metropolis is Ownable {
         return true;
     }
 
+    /**
+    * @dev Store owner is able to withdraw the store balance. Used msg.sender.transfer
+    * as opposed to msg.sender.call.value to prevent reentrancy attacks.
+    */
     function withdrawBalance(uint storeId) public onlyStoreOwners onlyIfContractNotStopped returns (bool) {
         Store storage s = stores[storeId];
+        uint balanceToWithdraw = s.balanceInWei;
 
-        require(s.balanceInWei >= 0, "You must have a balance to be able to withdraw");
+        require(balanceToWithdraw >= 0, "You must have a balance to be able to withdraw");
 
-        s.storeOwner.transfer(s.balanceInWei);
         s.balanceInWei = 0;
+        s.storeOwner.transfer(balanceToWithdraw);
 
         return true;
     }
