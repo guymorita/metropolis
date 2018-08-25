@@ -1,7 +1,8 @@
 pragma solidity ^0.4.23;
 
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract Metropolis {
+contract Metropolis is Ownable {
     address admin;
     bool private contractStopped = false;
     uint storeCount = 0;

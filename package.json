@@ -1,7 +1,6 @@
 {
   "name": "metropolis",
   "version": "1.0.0",
-  "description": "",
   "main": "truffle.js",
   "directories": {
     "test": "test"
@@ -14,5 +13,18 @@
   "license": "ISC",
   "devDependencies": {
     "lite-server": "^2.3.0"
-  }
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "^1.12.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guymorita/metropolis.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/guymorita/metropolis/issues"
+  },
+  "homepage": "https://github.com/guymorita/metropolis#readme",
+  "description": ""
 }
