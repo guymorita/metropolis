@@ -1,5 +1,6 @@
 pragma solidity ^0.4.23;
 
+
 contract Metropolis {
     address admin;
     mapping(address => bool) storeOwners;
@@ -100,11 +101,22 @@ contract Metropolis {
         Store storage s = stores[storeId];
         Item storage i = s.items[itemId];
 
-        require(msg.value >= i.priceInWei);
+        require(msg.value == i.priceInWei);
 
         s.balanceInWei = s.balanceInWei + msg.value;
 
         i.owner = msg.sender;
+
+        return true;
+    }
+
+    function withdrawBalance(uint storeId) public onlyStoreOwners returns (bool) {
+        Store storage s = stores[storeId];
+
+        require(s.balanceInWei >= 0);
+
+        s.storeOwner.transfer(s.balanceInWei);
+        s.balanceInWei = 0;
 
         return true;
     }
