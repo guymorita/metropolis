@@ -2,6 +2,17 @@ pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
+
+/**
+ * @title Metropolis
+ * @dev The Metropolis contract allows anyone to setup a metropolis where he / she
+ * choose store owners, the store owners create stores, items are created for stores,
+ * and finally visitors can buy the items with Ether. Of course after they make sales
+ * they can also withdraw their funds.
+ *
+ * Protections have been made against attacks such as: reentrancy, race conditions,
+ * timestamp dependence, overflow / underflow, and unexpected reverts.
+ */
 contract Metropolis is Ownable {
     address admin;
     bool private contractStopped = false;
@@ -15,7 +26,7 @@ contract Metropolis is Ownable {
         storeOwners[admin] = true;
     }
 
-    // Structs
+    /*** STRUCTS ***/
 
     struct Item {
         uint itemId;
@@ -34,38 +45,53 @@ contract Metropolis is Ownable {
         mapping (uint => Item) items;
     }
 
-    // Modifiers
+    /*** MODIFIERS ***/
 
+    /**
+    * @dev Check if sender is admin.
+    */
     function isAdmin() private view returns (bool) {
         return msg.sender == admin;
     }
 
+    /**
+    * @dev Modifier to check if sender is admin.
+    */
     modifier onlyAdmin() {
-        require(isAdmin());
-        // TODO: Why the _;
+        require(isAdmin(), "Admin required");
         _;
     }
 
+    /**
+    * @dev Check if sender is a store owner.
+    */
     function isStoreOwner() private view returns (bool) {
         return storeOwners[msg.sender];
     }
 
+    /**
+    * @dev Modifier to check if sender is a store owner.
+    */
     modifier onlyStoreOwners() {
-        require(isStoreOwner());
+        require(isStoreOwner(), "Store owner required");
         _;
     }
 
+    /**
+    * @dev Modifier to check if the contract is stopped.
+    * @notice This is the checker to see if the circuit breaker has been switched.
+    */
     modifier onlyIfContractNotStopped() {
-        require(contractStopped == false);
+        require(contractStopped == false, "Contract is stopped");
         _;
     }
 
-    // Events
+    /*** EVENTS ***/
 
     event LogStore(uint storeId, address storeOwner, string name);
     event LogItem(uint itemId, address owner, bool isForSale, string name, string imgUrl, uint priceInWei);
 
-    // External Functions
+    /*** GETTERS ***/
 
     function getItemCountAtStore(uint storeId) public view returns (uint) {
         return itemCountAtStore[storeId];
@@ -85,12 +111,30 @@ contract Metropolis is Ownable {
         }
     }
 
-    function toggleContractStopped() public onlyAdmin returns (bool) {
+    /*** EXTERNAL FUNCTIONS ***/
+
+    /**
+    * @dev Toggles the contract between stopped and !stopped.
+    * @notice If stopped, all the other external functions will be stopped.
+    */
+    function toggleContractStopped() external onlyAdmin returns (bool) {
         contractStopped = !contractStopped;
         return contractStopped;
     }
 
-    function createStore(string nameOfStore, address storeOwner) public onlyAdmin returns (uint storeId) {
+    /**
+    * @dev Admin creates a store and chooses the owner.
+    * @param nameOfStore - Name of the store to create.
+    * @param storeOwner - Address of the owner for the store.
+    */
+    function createStore(
+        string nameOfStore,
+        address storeOwner
+    )
+        external
+        onlyAdmin
+        returns (uint storeId)
+    {
         storeId = storeCount++;
 
         stores[storeId] = Store(storeId, storeOwner, nameOfStore, 0);
@@ -99,8 +143,26 @@ contract Metropolis is Ownable {
         return storeId;
     }
 
-    function addItem(uint storeId, string name, string imgUrl, uint priceInWei) public onlyStoreOwners onlyIfContractNotStopped returns (uint itemId) {
-        // require that the store owner is the correct owner
+    /**
+    * @dev Allows a store owner to add an item to his/her store.
+    * @param storeId - Store ID for the given item (an owner may have many stores).
+    * @param name - Name of the item.
+    * @param imgUrl - An image for the item to be used in the store.
+    * @param priceInWei - Price in wei.
+    * @notice Sender must be the store owner. No other senders are allowed.
+    */
+    function addItem(
+        uint storeId,
+        string name,
+        string imgUrl,
+        uint priceInWei
+    )
+        external
+        onlyStoreOwners
+        onlyIfContractNotStopped
+        returns (uint itemId)
+    {
+
         Store storage s = stores[storeId];
         address sender = msg.sender;
         require(s.storeOwner == sender, "You must be the store owner to add an item to this store");
@@ -112,14 +174,26 @@ contract Metropolis is Ownable {
         return itemId;
     }
 
-    function buyItem(uint storeId, uint itemId) public payable onlyIfContractNotStopped returns (bool) {
+    /**
+    * @dev Allow external users to buy an item.
+    * @param storeId - Store ID for the item to be purchased.
+    * @param itemId - Item ID for the item to be purchased.
+    */
+    function buyItem(
+        uint storeId,
+        uint itemId
+    )
+        external
+        payable
+        onlyIfContractNotStopped
+        returns (bool)
+    {
         Store storage s = stores[storeId];
         Item storage i = s.items[itemId];
 
         require(msg.value == i.priceInWei, "Please send the exact price of the item");
 
         s.balanceInWei = s.balanceInWei + msg.value;
-
         i.owner = msg.sender;
 
         return true;
@@ -127,9 +201,18 @@ contract Metropolis is Ownable {
 
     /**
     * @dev Store owner is able to withdraw the store balance. Used msg.sender.transfer
-    * as opposed to msg.sender.call.value to prevent reentrancy attacks.
+    * as opposed to msg.sender.call.value to prevent reentrancy attacks. It will
+    * automatically revert if the send fails.
+    * @param storeId - Store ID for the balance to be withdrawn.
     */
-    function withdrawBalance(uint storeId) public onlyStoreOwners onlyIfContractNotStopped returns (bool) {
+    function withdrawBalance(
+        uint storeId
+    )
+        external
+        onlyStoreOwners
+        onlyIfContractNotStopped
+        returns (bool)
+    {
         Store storage s = stores[storeId];
         uint balanceToWithdraw = s.balanceInWei;
 
@@ -141,9 +224,12 @@ contract Metropolis is Ownable {
         return true;
     }
 
-    // Emit
+    /*** EMIT ***/
 
-    function emitStores() public {
+    /**
+    * @dev Emits of all the stores. Used uint i as opposed to i to avoid overflow of the array.
+    */
+    function emitStores() external {
         for (uint i = 0; i < storeCount; i++) {
             Store storage s = stores[i];
             emit LogStore(
@@ -154,7 +240,11 @@ contract Metropolis is Ownable {
         }
     }
 
-    function emitItemsWithStoreId(uint storeId) public {
+    /**
+    * @dev Emits of the items in a store. Used uint i as opposed to i to avoid overflow of the array.
+    * @param storeId - Store ID for the items to be emitted.
+    */
+    function emitItemsWithStoreId(uint storeId) external {
         Store storage s = stores[storeId];
         uint c = itemCountAtStore[storeId];
         for (uint i = 0; i < c; i++) {
