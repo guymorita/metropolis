@@ -66,6 +66,11 @@ npm run dev
 #### Open browser
 http://localhost:3000
 
+#### Run tests
+``` bash
+truffle test
+```
+
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
