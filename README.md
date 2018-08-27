@@ -4,6 +4,8 @@
 
 ## Stories
 
+The following **required** features are implemented:
+
 - [x] An administrator opens the web app
 - [x] The web app reads the address and identifies that the user is an admin, showing them admin only functions, such as managing store owners
 - [x] An admin adds an address to the list of approved store owners, so if the owner of that address logs into the app, they have access to the store owner functions.
@@ -25,8 +27,8 @@
 - [x] Shoppers can purchase a product, which will debit their account and send it to the store
 
 - [x] Add a circuit breaker
-- [ ] Explain design patterns
-- [x] Protect against top 10 attacks
+- [x] Explain design patterns
+- [x] Explain protection against top attacks
 - [x] Add external library
 - [x] Comment to standard: https://solidity.readthedocs.io/en/v0.4.21/layout-of-source-files.html#comments
 
