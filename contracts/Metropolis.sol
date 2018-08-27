@@ -16,8 +16,8 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract Metropolis is Ownable {
     address admin;
     bool private contractStopped = false;
-    uint storeCount = 0;
-    mapping(address => bool) storeOwners;
+    uint private storeCount = 0;
+    mapping (address => bool) storeOwners;
     mapping (uint => Store) stores;
     mapping (uint => uint) itemCountAtStore;
 
@@ -112,6 +112,13 @@ contract Metropolis is Ownable {
     }
 
     /*** EXTERNAL FUNCTIONS ***/
+
+    /**
+    * @dev Kill switch for contract.
+    */
+    function kill() external onlyAdmin {
+        selfdestruct(admin);
+    }
 
     /**
     * @dev Toggles the contract between stopped and !stopped.
