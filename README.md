@@ -44,9 +44,11 @@ The following **optional** features are implemented:
 
 ## Installation Instructions
 
-#### Clone repo
+#### Clone repo / npm install
 ``` bash
 git clone https://github.com/guymorita/metropolis
+cd metropolis
+npm install
 ```
 
 #### Download and run truffle, ganache, and metamask
